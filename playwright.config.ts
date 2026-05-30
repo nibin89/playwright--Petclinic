@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 export default defineConfig({
   fullyParallel: false,
