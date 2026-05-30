@@ -6,7 +6,6 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Validate selected specialities", async ({ page }) => {
-
     const MenuDropDown = page.locator(".dropdown")
     await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
     await MenuDropDown.getByRole("link", { name: 'All' }).click()
@@ -29,8 +28,8 @@ test("Validate selected specialities", async ({ page }) => {
 
     await expect(page.locator("span.selected-specialties")).toContainText('Surgery, Dentistry');
 })
-test("Select all specialities", async ({ page }) => {
 
+test("Select all specialities", async ({ page }) => {
     const MenuDropDown = page.locator(".dropdown")
     await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
     await MenuDropDown.getByRole("link", { name: 'All' }).click()
@@ -43,8 +42,27 @@ test("Select all specialities", async ({ page }) => {
     for (const box of await allBoxes.all()) {
         await box.check({ force: true })
         expect(await box.isChecked()).toBeTruthy()
-
-        // Assert each checked speciality is displayed in the Specialties field
         await expect(page.locator("span.selected-specialties")).toBeVisible()
     }
+})
+
+test("Unselect all specialities", async ({ page }) => {
+    const MenuDropDown = page.locator(".dropdown")
+    await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
+    await MenuDropDown.getByRole("link", { name: 'All' }).click()
+    const vetsName = page.locator("#vets")
+    await vetsName.getByRole('row', { name: 'Linda Douglas' }).getByRole("button", { name: "Edit Vet" }).click()
+    await expect(page.locator("span.selected-specialties", { hasText: 'Surgery' })).toBeVisible()
+    await expect(page.locator("span.selected-specialties", { hasText: 'Dentistry' })).toBeVisible()
+    await page.locator("div.dropdown-display").click()
+    const allBoxes = page.getByRole('checkbox')
+    for (const box of await allBoxes.all()) {
+        await box.uncheck({ force: true })
+    }
+
+    for (const box of await allBoxes.all()) {
+        expect(await box.isChecked()).toBeFalsy()
+    }
+
+    await expect(page.locator("span.selected-specialties")).toHaveText('')
 })
