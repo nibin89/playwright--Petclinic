@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-require('dotenv').config();
+import 'dotenv/config';
 
 export default defineConfig({
   fullyParallel: false,
@@ -13,6 +13,9 @@ export default defineConfig({
     baseURL: 'https://petclinic.bondaracademy.com',
     trace: 'on-first-retry',
     storageState: '.auth/user.json',
+    launchOptions: {
+      slowMo: 100,
+    },
     extraHTTPHeaders: {
       'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`
     },
@@ -20,13 +23,10 @@ export default defineConfig({
     viewport: {height: 1080, width: 1920}
   },
 
-  projects: [
+   projects: [
     {
       name: 'chromium',
-      use: { 
-        browserName: 'chromium'
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
-
 });
