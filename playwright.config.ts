@@ -17,7 +17,7 @@ export default defineConfig({
       slowMo: 100,
     },
     extraHTTPHeaders: {
-      'Authorization': `Bearer ${process.env.ACCESS_TOKEN||''}`
+      'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`
     },
     actionTimeout: 10000,
     viewport: {height: 1080, width: 1920}
