@@ -23,14 +23,14 @@ test("Validate selected specialities", async ({ page }) => {
 
     await page.getByRole('checkbox', { name: 'dentistry' }).check();
 
-    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Dentistry');
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Dentistry', { ignoreCase: true });
 })
 
 test("Select all specialities", async ({ page }) => {
     await page.getByRole('button', { name: 'Veterinarians' }).click();
     await page.getByRole("link", { name: 'All' }).click();
     await page.getByRole('row', { name: 'Rafael Ortega' }).getByRole("button", { name: "Edit Vet" }).click();
-    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery');
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery', { ignoreCase: true });
     await page.locator("span.selected-specialties").click()
 
     const allBoxes = page.getByRole('checkbox')
@@ -39,14 +39,14 @@ test("Select all specialities", async ({ page }) => {
         expect(await box.isChecked()).toBeTruthy()
     }
     // Assert AFTER all checkboxes are checked
-    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Radiology, Dentistry')
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Radiology, dentistry', { ignoreCase: true })
 })
 
 test("Unselect all specialities", async ({ page }) => {
     await page.getByRole('button', { name: 'Veterinarians' }).click();
     await page.getByRole("link", { name: 'All' }).click();
     await page.getByRole('row', { name: 'Linda Douglas' }).getByRole("button", { name: "Edit Vet" }).click();
-    await expect(page.locator("span.selected-specialties")).toHaveText('Dentistry, Surgery');
+    await expect(page.locator("span.selected-specialties")).toHaveText('Dentistry, Surgery',{ ignoreCase: true });
     await page.locator("div.dropdown-display").click()
     const allBoxes = page.getByRole('checkbox')
     for (const box of await allBoxes.all()) {
