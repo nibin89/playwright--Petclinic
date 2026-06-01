@@ -8,64 +8,59 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Validate selected Pet  types from the list", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: "Owners" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Owners" })).toHaveText(
+    "Owners",
+  );
   await page.getByRole("link", { name: "George Franklin" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Pets and Visits" }),
-  ).toBeVisible();
+  await expect(page.locator(".ownerFullName")).toHaveText("George Franklin");
   await page
-    .getByRole("row")
-    .filter({ hasText: "Leo" })
+    .locator("app-pet-list", { hasText: "Leo" })
     .getByRole("button", { name: "Edit Pet" })
     .click();
-  await page.getByRole("heading", { name: " Pet " }).isVisible();
+  await expect(page.getByRole("heading", { name: " Pet " })).toHaveText("Pet");
   await expect(page.locator("#owner_name")).toHaveValue("George Franklin");
   await expect(page.locator("#type1")).toHaveValue("cat");
 
-  const typeDropdown = page.locator("#type");
-  const options = await typeDropdown.locator("option").allInnerTexts();
-  const typeTextBox = page.locator("#type1");
+  const petTypeDropdown = page.locator("#type");
+  const options = await petTypeDropdown.locator("option").allInnerTexts();
+  const petTypeReadOnlyField = page.locator("#type1");
 
   for (const option of options) {
-    await typeDropdown.selectOption(option);
-    await expect(typeTextBox).toHaveValue(option);
+    await petTypeDropdown.selectOption(option);
+    await expect(petTypeReadOnlyField).toHaveValue(option);
   }
 });
 test("Validate pet type update", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: "Owners" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Owners" })).toHaveText(
+    "Owners",
+  );
   await page.getByRole("link", { name: "Eduardo Rodriquez" }).click();
   await expect(
     page.getByRole("heading", { name: "Pets and Visits" }),
   ).toBeVisible();
-  await page
-    .locator("dl")
-    .filter({ hasText: "Rosy" })
-    .getByRole("button", { name: "Edit Pet" })
-    .click();
+  const rosyPetSection = page.locator("app-pet-list", { hasText: "Rosy" });
+  await rosyPetSection.getByRole("button", { name: "Edit Pet" }).click();
+  const petTypeReadOnlyField = page.locator("#type1");
   await expect(page.locator("#name")).toHaveValue("Rosy");
-  await expect(page.locator("#type1")).toHaveValue("dog");
+  await expect(petTypeReadOnlyField).toHaveValue("dog");
   await page.locator("#type").selectOption("bird");
-  await expect(page.locator("#type1")).toHaveValue("bird");
+  await expect(petTypeReadOnlyField).toHaveValue("bird");
   await page.getByRole("button", { name: "Update Pet" }).click();
   await expect(
     page.getByRole("heading", { name: "Owner Information" }),
   ).toBeVisible();
-  await expect(page.locator("dl").filter({ hasText: "Rosy" })).toContainText(
+  await expect(rosyPetSection.locator('dt:has-text("Type") + dd')).toHaveText(
     "bird",
   );
   /* Revert the selection of the pet type "bird" to its initial value 
     "dog" */
-  await page
-    .locator("dl")
-    .filter({ hasText: "Rosy" })
-    .getByRole("button", { name: "Edit Pet" })
-    .click();
+  await rosyPetSection.getByRole("button", { name: "Edit Pet" }).click();
   await expect(page.locator("#name")).toHaveValue("Rosy");
-  await expect(page.locator("#type1")).toHaveValue("bird");
+  await expect(petTypeReadOnlyField).toHaveValue("bird");
   await page.locator("#type").selectOption("dog");
-  await expect(page.locator("#type1")).toHaveValue("dog");
+  await expect(petTypeReadOnlyField).toHaveValue("dog");
   await page.getByRole("button", { name: "Update Pet" }).click();
-  await expect(page.locator("dl").filter({ hasText: "Rosy" })).toContainText(
+  await expect(rosyPetSection.locator('dt:has-text("Type") + dd')).toHaveText(
     "dog",
   );
 });
