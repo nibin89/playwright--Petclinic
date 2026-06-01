@@ -6,63 +6,53 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Validate selected specialities", async ({ page }) => {
-    const MenuDropDown = page.locator(".dropdown")
-    await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
-    await MenuDropDown.getByRole("link", { name: 'All' }).click()
+    await page.getByRole('button', { name: 'Veterinarians' }).click();
+    await page.getByRole("link", { name: 'All' }).click();
 
-    const vetsName = page.locator("#vets")
-    await vetsName.getByRole('row', { name: 'Helen Leary' }).getByRole("button", { name: "Edit Vet" }).click()
-    await expect(page.locator("span.selected-specialties", { hasText: 'Radiology' })).toBeVisible()
-    await page.locator("span.selected-specialties", { hasText: 'Radiology' }).click()
-    await page.getByLabel("Radiology").isChecked()
+    await page.getByRole('row', { name: 'Helen Leary' }).getByRole("button", { name: "Edit Vet" }).click();
+    await expect(page.locator("span.selected-specialties")).toHaveText('Radiology');
+    await page.locator("span.selected-specialties").click();
+    await expect(page.getByRole('checkbox', { name: 'Radiology' })).toBeChecked();
 
-    await page.getByLabel("Surgery").uncheck()
-    await page.getByLabel("dentistry").uncheck()
+    await page.getByRole('checkbox', { name: 'Surgery' }).uncheck();
+    await page.getByRole('checkbox', { name: 'dentistry' }).uncheck();
+    await page.getByRole('checkbox', { name: 'Surgery' }).check();
+    await page.getByRole('checkbox', { name: 'Radiology' }).uncheck();
 
-    await page.getByLabel("Radiology").uncheck()
-    await page.getByLabel("Surgery").check()
+    await expect(page.getByRole('checkbox', { name: 'Surgery' })).toBeChecked();
 
-    await expect(page.getByLabel("Surgery")).toBeVisible()
+    await page.getByRole('checkbox', { name: 'dentistry' }).check();
 
-    await page.getByLabel("dentistry").check()
-
-    await expect(page.locator("span.selected-specialties")).toContainText('Surgery, Dentistry');
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Dentistry');
 })
 
 test("Select all specialities", async ({ page }) => {
-    const MenuDropDown = page.locator(".dropdown")
-    await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
-    await MenuDropDown.getByRole("link", { name: 'All' }).click()
-    const vetsName = page.locator("#vets")
-    await vetsName.getByRole('row', { name: 'Rafael Ortega' }).getByRole("button", { name: "Edit Vet" }).click()
-    await expect(page.locator("span.selected-specialties", { hasText: 'Surgery' })).toBeVisible()
-    await page.locator("span.selected-specialties", { hasText: 'Surgery' }).click()
+    await page.getByRole('button', { name: 'Veterinarians' }).click();
+    await page.getByRole("link", { name: 'All' }).click();
+    await page.getByRole('row', { name: 'Rafael Ortega' }).getByRole("button", { name: "Edit Vet" }).click();
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery');
+    await page.locator("span.selected-specialties").click()
 
     const allBoxes = page.getByRole('checkbox')
     for (const box of await allBoxes.all()) {
-        await box.check({ force: true })
+        await box.check()
         expect(await box.isChecked()).toBeTruthy()
-        await expect(page.locator("span.selected-specialties")).toBeVisible()
     }
+    // Assert AFTER all checkboxes are checked
+    await expect(page.locator("span.selected-specialties")).toHaveText('Surgery, Radiology, Dentistry')
 })
 
 test("Unselect all specialities", async ({ page }) => {
-    const MenuDropDown = page.locator(".dropdown")
-    await MenuDropDown.getByRole('button', { name: 'Veterinarians' }).click();
-    await MenuDropDown.getByRole("link", { name: 'All' }).click()
-    const vetsName = page.locator("#vets")
-    await vetsName.getByRole('row', { name: 'Linda Douglas' }).getByRole("button", { name: "Edit Vet" }).click()
-    await expect(page.locator("span.selected-specialties", { hasText: 'Surgery' })).toBeVisible()
-    await expect(page.locator("span.selected-specialties", { hasText: 'Dentistry' })).toBeVisible()
+    await page.getByRole('button', { name: 'Veterinarians' }).click();
+    await page.getByRole("link", { name: 'All' }).click();
+    await page.getByRole('row', { name: 'Linda Douglas' }).getByRole("button", { name: "Edit Vet" }).click();
+    await expect(page.locator("span.selected-specialties")).toHaveText('Dentistry, Surgery');
     await page.locator("div.dropdown-display").click()
     const allBoxes = page.getByRole('checkbox')
     for (const box of await allBoxes.all()) {
-        await box.uncheck({ force: true })
-    }
-
-    for (const box of await allBoxes.all()) {
+        await box.uncheck()
         expect(await box.isChecked()).toBeFalsy()
     }
 
-    await expect(page.locator("span.selected-specialties")).toHaveText('')
+    await expect(page.locator("span.selected-specialties")).toBeEmpty();
 })
