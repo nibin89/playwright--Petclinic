@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 test("Add and Delete Pet Types", async ({ page }) => {
   await page.getByRole("link", { name: "Pet Types" }).click();
   await expect(page.getByRole("heading", { name: "Pet Types" })).toHaveText(
-    "Pet Types",
+    "Pet Types"
   );
   await page.getByRole("button", { name: "Add" }).click();
   await expect(page.getByRole("heading", { name: "New Pet Type" })).toHaveText(
