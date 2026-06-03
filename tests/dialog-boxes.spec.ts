@@ -6,11 +6,11 @@ test.beforeEach(async ({ page }) => {
 
 test('Add and Delete Pet Types', async ({ page }) => {
   await page.getByRole('link', { name: 'Pet Types' }).click();
-  await expect(page.getByRole('heading', { name: 'Pet Types' })).toHaveText('Pet Types');
+  await expect(page.getByRole('heading', { level: 2 }).first()).toHaveText('Pet Types');
   await page.getByRole('button', { name: 'Add' }).click();
-  await expect(page.getByRole('heading', { name: 'New Pet Type' })).toHaveText('New Pet Type');
-  await expect(page.locator('label', { hasText: 'Name' })).toBeVisible(); //getByLabel("Name") won't work because the label is not properly associated with the input.
-  await expect(page.locator('#name')).toBeVisible(); //since there are multiple textbox's in the page, id is used
+  await expect(page.getByRole('heading', { level: 2 }).nth(1)).toHaveText('New Pet Type');
+  await expect(page.locator('label', { hasText: 'Name' })).toBeVisible(); 
+  await expect(page.locator('#name')).toBeVisible(); 
   await page.locator('#name').fill('pig');
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByRole('row').last().getByRole('textbox')).toHaveValue('pig');
