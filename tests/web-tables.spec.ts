@@ -9,7 +9,6 @@ test.describe('Owners Management', () => {
     await page.getByRole('button', { name: 'Owners' }).click();
     await page.getByRole('link', { name: 'Search' }).click();
     await expect(page.getByRole('heading', { name: 'Owners' })).toBeVisible();
-    await expect(page.locator('tbody tr').first()).toBeVisible();
   });
 
   test('Validate the pet name city of the owner', async ({ page }) => {
@@ -44,11 +43,12 @@ test.describe('Owners Management', () => {
     const petName = (await ownerRow.getByRole('cell').nth(4).textContent())!.trim()
     await ownerRow.getByRole('link').click();
     await expect(page.getByRole('row', { name: 'Telephone' }).getByRole('cell')).toHaveText('6085552765');
-    await expect(page.locator('app-pet-list dd').filter({ hasText: petName })).toHaveText(petName);
+    await expect(page.locator('app-pet-list dd').first()).toHaveText(petName);
     
   });
 
   test('Validate pets of Madison city', async ({ page }) => {
+    await expect(page.locator('tbody tr').first()).toBeVisible();
     let pets = [];
     const madisonRows = page.getByRole('row', { name: 'Madison' });
     for (const row of await madisonRows.all()) {
@@ -89,10 +89,10 @@ test.describe('Owners Management', () => {
     await page.locator('#name').fill('oncology');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('row', { name: 'oncology' }).last()).toBeVisible();
-    let specialties: string[] = [];
-    const specialtiesFirstcell = page.locator('#specialties tbody tr td:first-child input');
+    let specialties: String[] = [];
+    const specialtiesFirstCell = page.locator('#specialties input')
 
-    for (const cell of await specialtiesFirstcell.all()) {
+    for (const cell of await specialtiesFirstCell.all()) {
       specialties.push((await cell.inputValue())?.trim());
     }
     await veterinariansButton.click();
@@ -100,7 +100,7 @@ test.describe('Owners Management', () => {
     await page.getByRole('row', { name: 'Sharon Jenkins' }).getByRole('button', { name: 'Edit Vet' }).click();
     await expect(page.getByRole('heading', { name: 'Edit Veterinarian' })).toBeVisible();
     await page.locator('div.dropdown-display').click();
-    const dropdownSpecialties: string[] = [];
+    const dropdownSpecialties: String[] = [];
 
     for (const label of await page.locator('div.dropdown-content label').all()) {
       dropdownSpecialties.push((await label.textContent())!.trim());
