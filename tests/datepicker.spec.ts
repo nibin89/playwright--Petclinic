@@ -50,6 +50,58 @@ await expect(page.locator('app-pet-list').filter({ hasText: 'Tom' })).toHaveCoun
 
 
 test("Select the dates of visits and validate dates order",async({page}) => {
-await page.getByRole('link', { name: "Jean Coleman" }).click();
 
+const today = new Date()
+const todaydateInput  = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`   // "2026/06/07"
+const todayOnPage = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+
+const pastDate = new Date()
+  pastDate.setDate(today.getDate() - 45)
+  const pastYear       = String(pastDate.getFullYear())
+  const pastMonth      = String(pastDate.getMonth()+1).padStart(2,'0')
+  const pastDay        = String(pastDate.getDate()).padStart(2,'0')
+  const pastDateInput  = `${pastYear}/${pastMonth}/${pastDay}`
+  const pastDateOnPage = `${pastYear}-${pastMonth}-${pastDay}`
+  const pastMonthShort = `${pastMonth} ${pastYear}`
+
+
+
+
+await page.getByRole('link', { name: "Jean Coleman" }).click();
+const samanthaSection = page.locator('app-pet-list').filter({ hasText: 'Samantha' })
+await samanthaSection.getByRole('button', { name: 'Add Visit' }).click()
+await expect(page.getByRole('heading', { name: 'New Visit' })).toBeVisible()
+await expect(page.getByRole('cell', { name: 'Samantha' })).toBeVisible()
+await expect(page.getByRole('cell', { name: 'Jean Coleman' })).toBeVisible()
+await page.getByRole('button', { name: 'Open calendar' }).click()
+await page.getByRole('button', { name: todaydateInput }).click()
+await expect(page.locator('input[name="date"]')).toHaveValue(todaydateInput)
+await page.locator('input[name="description"]').fill("dermatologists visit")
+await page.getByRole('button',  { name: 'Add Visit' }).click()
+await expect(page.getByRole('heading', { name: 'Owner Information' })).toBeVisible()
+const samanthaVisits = samanthaSection.locator('app-visit-list').getByRole('row').filter({ has: page.getByRole('cell') })
+await expect(samanthaVisits.first().getByRole('cell').first()).toHaveText(todayOnPage)
+await samanthaSection.getByRole('button', { name: 'Add Visit' }).click()
+await page.getByRole('button', { name: 'Open calendar' }).click()
+let calendarMonthandYear = await page.getByRole('button', {name:"Choose month and year"}).textContent()||""
+
+while (!calendarMonthandYear.includes(pastMonthShort)) {
+  await page.getByRole('button', { name: 'Previous month' }).click()
+  calendarMonthandYear = await page.getByRole('button', { name: 'Choose month and year' }).textContent() || ""
+}
+
+await page.getByRole('button', { name: pastDateInput }).click()
+await expect(page.locator('input[name="date"]')).toHaveValue(pastDateInput)
+await page.locator('input[name="description"]').fill("massage therapy")
+await page.getByRole('button',  { name: 'Add Visit' }).click()
+await expect(page.getByRole('heading', { name: 'Owner Information' })).toBeVisible()
+const firstVisitdate  = await samanthaVisits.first().getByRole('cell').first().innerText()
+const secondVisitdate = await samanthaVisits.nth(1).getByRole('cell').first().innerText()
+const firstVisitDate  = new Date(firstVisitdate)
+const secondVisitDate = new Date(secondVisitdate)
+expect(firstVisitDate > secondVisitDate).toBeTruthy()
+await samanthaVisits.filter({ hasText: 'dermatologists visit' }).getByRole('button', { name: 'Delete Visit' }).click()
+await samanthaVisits.filter({ hasText: 'massage therapy' }).getByRole('button', { name: 'Delete Visit' }).click()
+await expect(samanthaVisits.filter({ hasText: 'dermatologists visit' })).toHaveCount(0)
+await expect(samanthaVisits.filter({ hasText: 'massage therapy' })).toHaveCount(0)
 })
