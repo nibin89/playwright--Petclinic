@@ -13,9 +13,6 @@ export default defineConfig({
     baseURL: 'https://petclinic.bondaracademy.com',
     trace: 'on-first-retry',
     storageState: '.auth/user.json',
-    launchOptions: {
-      slowMo: 100,
-    },
     extraHTTPHeaders: {
       'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`
     },
