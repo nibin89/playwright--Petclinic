@@ -11,9 +11,9 @@ test("Select the desired state in calendar", async({page})=> {
   await page.getByRole('link', { name: "Harold Davis" }).click();
   await page.getByRole('button', {name:"Add New Pet"}).click()
   await expect(page.getByRole('heading', { name: 'Add Pet' })).toBeVisible();
-  await expect(page.locator('input#name + span')).toHaveCSS('color', 'rgb(52, 48, 45)');
+  await expect(page.locator('input#name + span')).toHaveClass(/glyphicon-remove/);
   await page.getByRole('textbox', {name: "Name"}).fill("Tom")
-  await expect(page.locator('input#name + span')).toHaveCSS('color', 'rgb(60, 118, 61)')
+  await expect(page.locator('input#name + span')).toHaveClass(/glyphicon-ok/)
   await page.getByRole('button', { name: 'Open calendar' }).click();
   await page.getByRole('button', { name: 'Choose month and year' }).click()
   await page.locator('.mat-calendar-previous-button').click(); 
@@ -52,9 +52,9 @@ test("Select the dates of visits and validate dates order",async({page}) => {
 await page.getByRole('link', { name: "Jean Coleman" }).click();
 const samanthaSection = page.locator('app-pet-list', {hasText: 'Samantha' })
 await samanthaSection.getByRole('button', { name: 'Add Visit' }).click()
-const petsTable = page.locator('table').filter({ hasText: 'Samantha' })
-await expect(petsTable.getByRole('cell').nth(0)).toHaveText('Samantha')
-await expect(petsTable.getByRole('cell').nth(3)).toHaveText('Jean Coleman')
+const samanthaVisitsTable = page.locator('table').filter({ hasText: 'Samantha' })
+await expect(samanthaVisitsTable.getByRole('cell').nth(0)).toHaveText('Samantha')
+await expect(samanthaVisitsTable.getByRole('cell').nth(3)).toHaveText('Jean Coleman')
 await page.getByRole('button', { name: 'Open calendar' }).click()
 await page.getByRole('button', { name: todayInput }).click()
 await expect(page.locator('input[name="date"]')).toHaveValue(todayInput)
