@@ -1,8 +1,6 @@
 import { chromium, type FullConfig } from '@playwright/test';
-
 const fs = require('fs').promises;
 const filePath = '.auth/user.json';
-
 async function browserAuthorize(config: FullConfig){
     const { baseURL, storageState } = config.projects[0].use;
    
@@ -21,7 +19,7 @@ async function browserAuthorize(config: FullConfig){
         }
     }
 
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     await context.addCookies(user.cookies)
     const page = await context.newPage();
