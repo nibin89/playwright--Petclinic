@@ -15,11 +15,12 @@ test.beforeEach(async ({ page }) => {
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Owners' }).click();
-  await page.getByRole('link', { name: 'Search' }).click();
+  
 });
 
 test('mocking API request', async ({ page }) => {
+  await page.getByRole('button', { name: 'Owners' }).click();
+  await page.getByRole('link', { name: 'Search' }).click();
   const ownerRows = page.locator('tbody > tr');
   await expect(ownerRows).toHaveCount(2);
 
