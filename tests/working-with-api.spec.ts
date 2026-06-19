@@ -21,6 +21,7 @@ test.beforeEach(async ({ page }) => {
     const responseBody = await response.json();
 
     const vet = responseBody.find((v: any) => v.firstName === 'Sharon' && v.lastName === 'Jenkins');
+    
     if(vet){
 
 vet.specialties = specialities
