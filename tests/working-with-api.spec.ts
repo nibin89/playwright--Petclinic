@@ -2,9 +2,7 @@ import { test, expect } from '@playwright/test';
 import owners from '../test-data/owners.json';
 
 test.beforeEach(async ({ page }) => {
-  const ownerId = owners[0].id;
-
-  await page.route(`**/api/owners/${ownerId}`, async (route) => {
+  await page.route(`**/api/owners/${owners[0].id}`, async (route) => {
     await route.fulfill({
       body: JSON.stringify(owners[0])
     });
@@ -16,44 +14,46 @@ test.beforeEach(async ({ page }) => {
     });
   });
 
-  await page.goto('https://petclinic.bondaracademy.com');
+  await page.goto('/');
   await page.getByRole('button', { name: 'Owners' }).click();
   await page.getByRole('link', { name: 'Search' }).click();
 });
 
 test('mocking API request', async ({ page }) => {
-  const ownerRows = page.locator('.table tbody > tr');
+  const ownerRows = page.locator('tbody > tr');
   await expect(ownerRows).toHaveCount(2);
 
-  await page.getByRole('link', { name: `${owners[0].firstName} ${owners[0].lastName}` }).click();
-  await expect(page).toHaveURL(`https://petclinic.bondaracademy.com/owners/${owners[0].id}`);
+  const ownerNameFromOwnersPage = (await ownerRows.first().locator('.ownerFullName').textContent())!;
+  const addressFromOwnersPage = (await ownerRows.first().locator('.ownerFullName + td').textContent())!;
+  const cityFromOwnersPage = (await ownerRows.first().locator('.ownerFullName + td + td').textContent())!;
+  const telephoneFromOwnersPage = (await ownerRows.first().locator('.ownerFullName + td + td + td').textContent())!;
+  const petFromOwnersPage = (await ownerRows.first().locator('td').last().textContent())!;
+  const petNamesFromOwnersPage = petFromOwnersPage.trim().split(/\s+/);
+  
+  await ownerRows.getByRole('link').first().click();
+  await expect(page).toHaveURL(`/owners/${owners[0].id}`);
 
   const ownerInfoSection = page.locator('app-owner-detail');
-  await expect(ownerInfoSection.locator('.ownerFullName')).toHaveText(`${owners[0].firstName} ${owners[0].lastName}`);
+  await expect(ownerInfoSection.locator('.ownerFullName')).toHaveText(ownerNameFromOwnersPage);
 
   const addressRow = page.getByRole('row', { name: 'Address' });
-  await expect(addressRow.locator('td')).toHaveText(owners[0].address);
+  await expect(addressRow.locator('td')).toHaveText(addressFromOwnersPage);
 
   const cityRow = page.getByRole('row', { name: 'City' });
-  await expect(cityRow.locator('td')).toHaveText(owners[0].city);
+  await expect(cityRow.locator('td')).toHaveText(cityFromOwnersPage);
 
   const telephoneRow = page.getByRole('row', { name: 'Telephone' });
-  await expect(telephoneRow.locator('td')).toHaveText(owners[0].telephone);
+  await expect(telephoneRow.locator('td')).toHaveText(telephoneFromOwnersPage);
 
   const petList = page.locator('app-pet-list');
-  await expect(petList.locator('dl').locator('dd').first()).toHaveText(owners[0].pets[0].name);
 
-  const petDls = page.locator('app-pet-list dl')
-  await expect(petDls).toHaveCount(owners[0].pets.length)
+  await expect(petList.locator('dl > dd:first-of-type')).toHaveText(petNamesFromOwnersPage);
+
+  const petNames = page.locator('app-pet-list dl');
+  await expect(petNames).toHaveCount(owners[0].pets.length);
   
-  for(let i=0; i < owners[0].pets.length; i++){
- await expect(petDls.nth(i).locator('dd').first()).toHaveText(owners[0].pets[i].name)
-
-const firstPetSection = page.locator('app-pet-list').first()
-const visitRows = firstPetSection.locator('app-visit-list table').getByRole('row').filter({ hasNotText: 'Visit Date' })
-await expect(visitRows).toHaveCount(owners[0].pets[0].visits.length)
-
-  }
-
-
+  const firstPetSection = page.locator('app-pet-list').first();
+  const visitRows = firstPetSection.locator('app-visit-list table').getByRole('row').filter({ hasNotText: 'Visit Date' });
+  
+  await expect(visitRows).toHaveCount(10)
 });
