@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "radiology" },
+  { "id": 2, "name": "surgery" },
+  { "id": 3, "name": "dentistry" },
+  { "id": 4, "name": "oncology" },
+  { "id": 5, "name": "dermatology" },
+  { "id": 6, "name": "cardiology" },
+  { "id": 7, "name": "neurology" },
+  { "id": 8, "name": "orthopedics" },
+  { "id": 9, "name": "pediatrics" },
+  { "id": 10, "name": "ophthalmology" }
+]
