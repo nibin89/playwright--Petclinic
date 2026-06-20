@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
 import owners from '../test-data/owners.json';
 import specialities from '../test-data/sharonspecialities.json';
 
@@ -95,3 +95,4 @@ test('validate specilaities list for veterinarian',{
   }
   
 });
+
