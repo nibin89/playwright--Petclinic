@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-
+const API_BASE_URL = 'https://petclinic-api.bondaracademy.com/petclinic/api'
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
 test.describe('Performing API Request', () => {
   test('Validation of delete specialty', async ({ page, request }) => {
-    const createResponse = await request.post('https://petclinic-api.bondaracademy.com/petclinic/api/specialties', {
+    const createResponse = await request.post(`${API_BASE_URL}/specialties`, {
       data: { name: 'api testing expert' }
     });
 
@@ -25,7 +25,7 @@ test.describe('Performing API Request', () => {
 
   test('Add and delete a Veterinarian', async ({ page, request }) => {
     // Add a new Veterinarian
-    const createResponse = await request.post('https://petclinic-api.bondaracademy.com/petclinic/api/vets', {
+    const createResponse = await request.post(`${API_BASE_URL}/vets`, {
       data: {
         firstName: 'Nibin',
         lastName: 'Mathew',
@@ -45,7 +45,7 @@ test.describe('Performing API Request', () => {
     await expect(nibinvetRow).toBeVisible();
     await expect(nibinvetRow.getByRole('cell').first()).toHaveText('Nibin Mathew');
     await expect(nibinvetRow.getByRole('cell').nth(1)).toBeEmpty();
-    await page.getByRole('button', { name: 'Edit Vet' }).click();
+    await nibinvetRow.getByRole('button', { name: 'Edit Vet' }).click();
     await page.locator('div.dropdown').click();
     await page.getByLabel('denistry').check();
     await page.locator('div.dropdown').click();
@@ -53,16 +53,16 @@ test.describe('Performing API Request', () => {
     await expect(nibinvetRow.getByRole('cell').nth(1)).toHaveText('denistry');
 
     // Delete a Veterinarian
-    const deleteResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/vets/${vetId}`);
+    const deleteResponse = await request.delete(`${API_BASE_URL}/vets/${vetId}`);
     expect(deleteResponse.status()).toBe(204);
-    const getResponse = await request.get('https://petclinic-api.bondaracademy.com/petclinic/api/vets');
+    const getResponse = await request.get(`${API_BASE_URL}/vets`);
     const vets = await getResponse.json();
     const deletedVet = vets.find((v: any) => v.id === vetId);
     expect(deletedVet).toBeUndefined();
   });
 
   test('New specilaity displayed', async ({ page, request }) => {
-    const specilatyResponse = await request.post('https://petclinic-api.bondaracademy.com/petclinic/api/specialties', {
+    const specilatyResponse = await request.post(`${API_BASE_URL}/specialties`, {
       data: { name: 'api testing ninja' }
     });
 
@@ -70,7 +70,7 @@ test.describe('Performing API Request', () => {
     const specialtyData = await specilatyResponse.json();
     const specilatyId = specialtyData.id
 
-    const vetResponse = await request.post('https://petclinic-api.bondaracademy.com/petclinic/api/vets', {
+    const vetResponse = await request.post(`${API_BASE_URL}/vets`, {
       data: {
         firstName: 'Vishnu',
         lastName: 'Prasad',
@@ -97,9 +97,11 @@ test.describe('Performing API Request', () => {
     await expect(vishnuvetRow.getByRole('cell').nth(1)).toHaveText('api testing ninja');
 
     // Delete a Veterinarian
-    const deleteVetResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/vets/${vetId}`);
+    const deleteVetResponse = await request.delete(`${API_BASE_URL}/vets/${vetId}`);
     expect(deleteVetResponse.status()).toBe(204);
-    const deleteSpecilatyResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/specialties/${specilatyId}`);
+    const deleteSpecilatyResponse = await request.delete(`${API_BASE_URL}/specialties/${specilatyId}`);
     expect(deleteSpecilatyResponse.status()).toBe(204);
+    await page.reload();
+    await expect(page.getByRole('row', { name: 'api testing ninja' })).not.toBeVisible();
   });
 });
