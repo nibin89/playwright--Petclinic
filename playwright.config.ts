@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 require('dotenv').config({ quiet: true });
 
 export default defineConfig({
+  testDir: './tests',
   fullyParallel: false,
   retries: 0,
   workers: 1,
@@ -14,16 +15,16 @@ export default defineConfig({
     trace: 'on-first-retry',
     storageState: '.auth/user.json',
     extraHTTPHeaders: {
-      'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`
+      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
     },
     actionTimeout: 10000,
-    viewport: {height: 1080, width: 1920}
+    viewport: { height: 1080, width: 1920 }
   },
 
-   projects: [
+  projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+      use: { ...devices['Desktop Chrome'] }
+    }
+  ]
 });
