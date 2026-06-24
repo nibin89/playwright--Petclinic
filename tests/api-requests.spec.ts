@@ -17,10 +17,11 @@ test.describe('Performing API Request', () => {
     await page.getByRole('link', { name: 'Specialties' }).click();
     await page.getByRole('button', { name: 'Add' }).click();
     await expect(page.getByRole('row', { name: 'api testing expert' })).toBeVisible();
-    await page.getByRole('row', { name: 'api testing expert' }).getByRole('button', { name: 'Delete' }).click();
-    await page.waitForResponse(
+    const deleteResponsePromise = page.waitForResponse(
       response => response.url().includes('/petclinic/api/specialties')
         && response.status() === 204)
+    await page.getByRole('row', { name: 'api testing expert' }).getByRole('button', { name: 'Delete' }).click();
+    await deleteResponsePromise
     await expect(page.getByRole('row', { name: 'api testing expert' })).not.toBeVisible();
   });
 
