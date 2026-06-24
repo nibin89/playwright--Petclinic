@@ -6,26 +6,27 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Performing API Request', () => {
   test('Validation of delete specialty', async ({ page, request }) => {
-    const createResponse = await request.post(`${API_BASE_URL}/specialties`, {
+    const createSpecialtyResponse = await request.post(`${API_BASE_URL}/specialties`, {
       data: { name: 'api testing expert' }
     });
 
-    expect(createResponse.status()).toBe(201);
-    const specialty = await createResponse.json();
-    expect(specialty.name).toBe('api testing expert');
+    expect(createSpecialtyResponse.status()).toBe(201);
+    const createdSpecialtyResponseJSON = await createSpecialtyResponse.json();
+    expect(createdSpecialtyResponseJSON.name).toBe('api testing expert');
 
     await page.getByRole('link', { name: 'Specialties' }).click();
     await page.getByRole('button', { name: 'Add' }).click();
     await expect(page.getByRole('row', { name: 'api testing expert' })).toBeVisible();
-    await page.getByRole('row', { name: 'api testing expert' })
-      .getByRole('button', { name: 'Delete' })
-      .click();
+    await page.getByRole('row', { name: 'api testing expert' }).getByRole('button', { name: 'Delete' }).click();
+    await page.waitForResponse(
+      response => response.url().includes('/petclinic/api/specialties')
+        && response.status() === 204)
     await expect(page.getByRole('row', { name: 'api testing expert' })).not.toBeVisible();
   });
 
   test('Add and delete a Veterinarian', async ({ page, request }) => {
     // Add a new Veterinarian
-    const createResponse = await request.post(`${API_BASE_URL}/vets`, {
+    const createVetResponse = await request.post(`${API_BASE_URL}/vets`, {
       data: {
         firstName: 'Nibin',
         lastName: 'Mathew',
@@ -33,21 +34,21 @@ test.describe('Performing API Request', () => {
         specialties: []
       }
     });
-    expect(createResponse.status()).toBe(201);
-    const vet = await createResponse.json();
-    const vetId = vet.id;
-    expect(vet.firstName).toBe('Nibin');
-    expect(vet.lastName).toBe('Mathew');
+    expect(createVetResponse.status()).toBe(201);
+    const vetResponseJson = await createVetResponse.json();
+    const vetId = vetResponseJson.id;
+    expect(vetResponseJson.firstName).toBe('Nibin');
+    expect(vetResponseJson.lastName).toBe('Mathew');
 
     await page.getByRole('button', { name: 'Veterinarians' }).click();
     await page.getByRole('link', { name: 'All' }).click();
-    const nibinvetRow = page.getByRole('row', { name: 'Nibin Mathew' }).last();
+    const nibinvetRow = page.getByRole('row', { name: 'Nibin Mathew' })
     await expect(nibinvetRow).toBeVisible();
     await expect(nibinvetRow.getByRole('cell').first()).toHaveText('Nibin Mathew');
     await expect(nibinvetRow.getByRole('cell').nth(1)).toBeEmpty();
     await nibinvetRow.getByRole('button', { name: 'Edit Vet' }).click();
     await page.locator('div.dropdown').click();
-    await page.getByLabel('denistry').check();
+    await page.getByRole('checkbox', { name: "denistry" }).check();
     await page.locator('div.dropdown').click();
     await page.getByRole('button', { name: 'Save Vet' }).click();
     await expect(nibinvetRow.getByRole('cell').nth(1)).toHaveText('denistry');
@@ -55,10 +56,10 @@ test.describe('Performing API Request', () => {
     // Delete a Veterinarian
     const deleteResponse = await request.delete(`${API_BASE_URL}/vets/${vetId}`);
     expect(deleteResponse.status()).toBe(204);
-    const getResponse = await request.get(`${API_BASE_URL}/vets`);
-    const vets = await getResponse.json();
-    const deletedVet = vets.find((v: any) => v.id === vetId);
-    expect(deletedVet).toBeUndefined();
+    const getAllVetsResponse = await request.get(`${API_BASE_URL}/vets`);
+    const vetsList = await getAllVetsResponse.json();
+    const vetIds = vetsList.map((vet: any) => vet.id);
+    expect(vetIds).not.toContain(vetId);
   });
 
   test('New specilaity displayed', async ({ page, request }) => {
@@ -70,12 +71,16 @@ test.describe('Performing API Request', () => {
     const specialtyData = await specilatyResponse.json();
     const specilatyId = specialtyData.id
 
+    const allSpecialtiesResponse = await request.get(`${API_BASE_URL}/specialties`)
+    const allSpecialties = await allSpecialtiesResponse.json()
+    const surgerySpecialty = allSpecialties.find((s: any) => s.name === 'surgery')
+
     const vetResponse = await request.post(`${API_BASE_URL}/vets`, {
       data: {
         firstName: 'Vishnu',
         lastName: 'Prasad',
         id: null,
-        specialties: [{ id: 5046, name: 'surgery' }]
+        specialties: [{ id: surgerySpecialty.id, name: surgerySpecialty.name }]
       }
     });
     expect(vetResponse.status()).toBe(201);
@@ -101,7 +106,8 @@ test.describe('Performing API Request', () => {
     expect(deleteVetResponse.status()).toBe(204);
     const deleteSpecilatyResponse = await request.delete(`${API_BASE_URL}/specialties/${specilatyId}`);
     expect(deleteSpecilatyResponse.status()).toBe(204);
-    await page.reload();
+    await page.getByRole('link', { name: 'Specialties' }).click()
+    await page.waitForResponse(`${API_BASE_URL}/specialties`)
     await expect(page.getByRole('row', { name: 'api testing ninja' })).not.toBeVisible();
   });
 });
