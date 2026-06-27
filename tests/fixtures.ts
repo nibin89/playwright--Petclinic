@@ -38,16 +38,16 @@ export const test = base.extend<OwnerFixture>({
             },
         });
         expect(createOwnerResponse.status()).toBe(201);
-        const ownerData = await createOwnerResponse.json();
+        const ownerDataJson = await createOwnerResponse.json();
 
         // Step 2: Create pet
-        const createPetResponse = await request.post(`${API_URL}/api/owners/${ownerData.id}/pets`, {
+        const createPetResponse = await request.post(`${API_URL}/api/owners/${ownerDataJson.id}/pets`, {
             data: {
                 id: null,
                 name: 'FixturePet',
                 birthDate: '2025-06-25',
                 type: { name: 'cat', id: 3079 },
-                owner: ownerData,
+                owner: ownerDataJson,
                 pettype: 'cat',
             },
         });
@@ -55,8 +55,8 @@ export const test = base.extend<OwnerFixture>({
         const petDataResponseJson = await createPetResponse.json();
 
         // Step 3: Create visit
-        const CreateVisitResponse = await request.post(
-            `${API_URL}/api/owners/${ownerData.id}/pets/${petDataResponseJson.id}/visits`,
+        const createVisitResponse = await request.post(
+            `${API_URL}/api/owners/${ownerDataJson.id}/pets/${petDataResponseJson.id}/visits`,
             {
                 data: {
                     id: null,
@@ -66,11 +66,11 @@ export const test = base.extend<OwnerFixture>({
                 },
             }
         );
-        expect(CreateVisitResponse.status()).toBe(201);
+        expect(createVisitResponse.status()).toBe(201);
 
         // Hand control to the test
         await use({
-            id: ownerData.id,
+            id: ownerDataJson.id,
             firstName: 'Fixture',
             lastName: 'Owner',
             petName: 'FixturePet',
@@ -78,7 +78,7 @@ export const test = base.extend<OwnerFixture>({
         });
 
         // Teardown: delete owner
-        await request.delete(`${API_URL}/api/owners/${ownerData.id}`);
+        await request.delete(`${API_URL}/api/owners/${ownerDataJson.id}`);
     },
 });
 
