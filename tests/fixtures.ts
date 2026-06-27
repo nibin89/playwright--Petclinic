@@ -16,10 +16,10 @@ export const test = base.extend<OwnerFixture>({
     owner: async ({ request }, use) => {
 
         // Pre-cleanup: delete any leftover Fixture Owners that failed to delete in the previous runs
-        const existingRes = await request.get(`${API_URL}/api/owners?lastName=Owner`);
-        const responseText = await existingRes.text();
-        if (responseText) {
-            const existingOwners = JSON.parse(responseText);
+        const existingResponse = await request.get(`${API_URL}/api/owners?lastName=Owner`);
+        const existingresponseText = await existingResponse.text();
+        if (existingresponseText) {
+            const existingOwners = JSON.parse(existingresponseText);
             for (const owner of existingOwners) {
                 if (owner.firstName === 'Fixture') {
                     await request.delete(`${API_URL}/api/owners/${owner.id}`);
@@ -28,7 +28,7 @@ export const test = base.extend<OwnerFixture>({
         }
 
         // Step 1: Create owner
-        const ownerRes = await request.post(`${API_URL}/api/owners`, {
+        const createOwnerResponse = await request.post(`${API_URL}/api/owners`, {
             data: {
                 firstName: 'Fixture',
                 lastName: 'Owner',
@@ -37,11 +37,11 @@ export const test = base.extend<OwnerFixture>({
                 telephone: '1234567890',
             },
         });
-        expect(ownerRes.status()).toBe(201);
-        const ownerData = await ownerRes.json();
+        expect(createOwnerResponse.status()).toBe(201);
+        const ownerData = await createOwnerResponse.json();
 
         // Step 2: Create pet
-        const petRes = await request.post(`${API_URL}/api/owners/${ownerData.id}/pets`, {
+        const createPetResponse = await request.post(`${API_URL}/api/owners/${ownerData.id}/pets`, {
             data: {
                 id: null,
                 name: 'FixturePet',
@@ -51,22 +51,22 @@ export const test = base.extend<OwnerFixture>({
                 pettype: 'cat',
             },
         });
-        expect(petRes.status()).toBe(201);
-        const petData = await petRes.json();
+        expect(createPetResponse.status()).toBe(201);
+        const petDataResponseJson = await createPetResponse.json();
 
         // Step 3: Create visit
-        const visitRes = await request.post(
-            `${API_URL}/api/owners/${ownerData.id}/pets/${petData.id}/visits`,
+        const CreateVisitResponse = await request.post(
+            `${API_URL}/api/owners/${ownerData.id}/pets/${petDataResponseJson.id}/visits`,
             {
                 data: {
                     id: null,
                     date: '2026-06-07',
                     description: 'Fixture visit',
-                    pet: petData,
+                    pet: petDataResponseJson,
                 },
             }
         );
-        expect(visitRes.status()).toBe(201);
+        expect(CreateVisitResponse.status()).toBe(201);
 
         // Hand control to the test
         await use({
