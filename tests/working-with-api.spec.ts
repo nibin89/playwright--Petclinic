@@ -75,7 +75,7 @@ test('validate ownerslist and visit list count', {
   const visitRows = firstPetSection.getByRole('table').getByRole('row').filter({ hasNotText: 'Visit Date' });
 
   await expect(visitRows).toHaveCount(10);
-}); 
+});
 
 test('validate specilaities list for veterinarian', {
   annotation: {
