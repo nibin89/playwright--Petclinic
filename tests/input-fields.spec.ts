@@ -49,9 +49,10 @@ test("Validation of Pet type name is required", async ({ page }) => {
     await page.locator('tr').filter({ has: page.locator('[id="2"]') }).getByRole('button', { name: 'Edit' }).click()
     await expect(page.getByRole("heading", { name: "Edit Pet Type" })).toBeVisible();
 
-    
-    await page.locator("#name").clear()
-    await expect(page.locator(".help-block", { hasText: 'Name is required' })).toBeVisible()
+    await page.locator('#name').click({ clickCount: 3 }); // select all
+    await page.keyboard.press('Backspace');
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.help-block').filter({ hasText: 'Name is required' })).toBeVisible()
     await page.getByRole("button", { name: "Update" }).click();
     await expect(page.getByRole("heading", { name: "Edit Pet Type" })).toBeVisible();
 
