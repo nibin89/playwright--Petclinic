@@ -10,7 +10,7 @@ test("Select the desired state in calendar", async ({ page }) => {
 
   await page.getByRole('link', { name: "Harold Davis" }).click();
   await page.getByRole('button', { name: "Add New Pet" }).click()
-  await page.waitForLoadState('networkidle')
+  await page.waitForURL('**/pets/add', { timeout: 10000 });
   await expect(page.getByRole('heading', { name: 'Add Pet' })).toBeVisible();
   await expect(page.locator('input#name + span')).toHaveClass(/glyphicon-remove/);
   await page.getByRole('textbox', { name: "Name" }).fill("Tom")
