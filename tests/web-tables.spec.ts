@@ -22,8 +22,8 @@ test.describe('Owners Management', () => {
   });
 
   test('Validate search by Last Name', async ({ page }) => {
-    const searchCases  = ['Black', 'Davis', 'Es', 'Playwright'];
-    for (const lastName of searchCases ) {
+    const searchCases = ['Black', 'Davis', 'Es', 'Playwright'];
+    for (const lastName of searchCases) {
       await page.locator('#lastName').fill(lastName);
       const responsePromise = page.waitForResponse(`**/api/owners?lastName=${lastName}`);
       await page.getByRole('button', { name: 'Find Owner' }).click();
@@ -44,7 +44,7 @@ test.describe('Owners Management', () => {
     await ownerRow.getByRole('link').click();
     await expect(page.getByRole('row', { name: 'Telephone' }).getByRole('cell')).toHaveText('6085552765');
     await expect(page.locator('app-pet-list dd').first()).toHaveText(petName);
-    
+
   });
 
   test('Validate pets of Madison city', async ({ page }) => {
@@ -59,27 +59,27 @@ test.describe('Owners Management', () => {
   });
 
   test('Validate specialty update', async ({ page }) => {
-  await page.getByRole('button', { name: 'Veterinarians' }).click();
-  await page.getByRole('link', { name: 'All' }).click();
-  await expect(page.getByRole('row', { name: 'Rafael Ortega' }).getByRole('cell', { name: 'surgery' })).toBeVisible();
-  await page.getByRole('link', { name: ' Specialties' }).click();
-  await expect(page.getByRole('heading', { name: 'Specialties' })).toBeVisible();
-  await page.getByRole('row', { name: 'surgery' }).getByRole('button', { name: 'Edit' }).click();
-  await expect(page.getByRole('heading', { name: 'Edit Specialty' })).toBeVisible();
-  await expect(page.getByRole('textbox')).toHaveValue('surgery');
-  await page.getByRole('textbox').fill('dermatology');
-  await page.getByRole('button', { name: 'Update' }).click();
-  await expect(page.getByRole('row', { name: 'dermatology' }).getByRole('textbox')).toHaveValue('dermatology');
-  await page.getByRole('button', { name: 'Veterinarians' }).click();
-  await page.getByRole('link', { name: 'All' }).click();
-  await expect(page.getByRole('row', { name: 'Rafael Ortega' }).getByRole('cell', { name: 'dermatology' })).toBeVisible();
-  await page.getByRole('link', { name: ' Specialties' }).click();
-  await page.getByRole('row', { name: 'dermatology' }).getByRole('button', { name: 'Edit' }).click();
-  await expect(page.getByRole('textbox')).toHaveValue('dermatology');
-  await page.getByRole('textbox').fill('surgery');
-  await page.getByRole('button', { name: 'Update' }).click();
+    await page.getByRole('button', { name: 'Veterinarians' }).click();
+    await page.getByRole('link', { name: 'All' }).click();
+    await expect(page.getByRole('row', { name: 'Rafael Ortega' }).getByRole('cell', { name: 'surgery' })).toBeVisible();
+    await page.getByRole('link', { name: ' Specialties' }).click();
+    await expect(page.getByRole('heading', { name: 'Specialties' })).toBeVisible();
+    await page.getByRole('row', { name: 'surgery' }).getByRole('button', { name: 'Edit' }).click();
+    await expect(page.getByRole('heading', { name: 'Edit Specialty' })).toBeVisible();
+    await expect(page.getByRole('textbox')).toHaveValue('surgery');
+    await page.getByRole('textbox').fill('dermatology');
+    await page.getByRole('button', { name: 'Update' }).click();
+    await expect(page.getByRole('row', { name: 'dermatology' }).getByRole('textbox')).toHaveValue('dermatology');
+    await page.getByRole('button', { name: 'Veterinarians' }).click();
+    await page.getByRole('link', { name: 'All' }).click();
+    await expect(page.getByRole('row', { name: 'Rafael Ortega' }).getByRole('cell', { name: 'dermatology' })).toBeVisible();
+    await page.getByRole('link', { name: ' Specialties' }).click();
+    await page.getByRole('row', { name: 'dermatology' }).getByRole('button', { name: 'Edit' }).click();
+    await expect(page.getByRole('textbox')).toHaveValue('dermatology');
+    await page.getByRole('textbox').fill('surgery');
+    await page.getByRole('button', { name: 'Update' }).click();
 
-});
+  });
 
   test('Validate speciality lists', async ({ page }) => {
     const specialitieslink = page.getByRole('link', { name: ' Specialties' });
