@@ -1,3 +1,5 @@
+
+declare const process: any;
 import { chromium, type FullConfig } from '@playwright/test';
 const fs = require('fs').promises;
 const filePath = '.auth/user.json';
