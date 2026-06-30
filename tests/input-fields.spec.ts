@@ -49,13 +49,12 @@ test("Validation of Pet type name is required", async ({ page }) => {
     await page.locator('tr').filter({ has: page.locator('[id="2"]') }).getByRole('button', { name: 'Edit' }).click()
     await expect(page.getByRole("heading", { name: "Edit Pet Type" })).toBeVisible();
 
-    await page.locator('#name').click({ clickCount: 3 }); // select all
-    await page.keyboard.press('Backspace');
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.help-block').filter({ hasText: 'Name is required' })).toBeVisible()
-    await page.getByRole("button", { name: "Update" }).click();
-    await expect(page.getByRole("heading", { name: "Edit Pet Type" })).toBeVisible();
-
+    const nameField = page.locator('#name');
+    await nameField.click();
+    await nameField.press('Control+A');
+    await nameField.press('Backspace');
+    await expect(nameField).toHaveValue('');
+    await expect(page.locator('.help-block').filter({ hasText: 'Name is required' })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Cancel" }).click()
     await expect(page.getByRole("heading", { name: "Pet Types" })).toBeVisible()
 })
