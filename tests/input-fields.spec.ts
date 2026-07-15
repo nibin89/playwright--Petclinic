@@ -50,6 +50,7 @@ test("Validation of Pet type name is required", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Edit Pet Type" })).toBeVisible();
 
     const nameField = page.locator('#name');
+    await expect(nameField).toHaveValue('lizar');
     await nameField.click();
     await nameField.press('Control+A');
     await nameField.press('Backspace');
