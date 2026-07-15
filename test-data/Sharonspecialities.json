@@ -8,6 +8,6 @@
   { "id": 7, "name": "neurology" },
   { "id": 8, "name": "orthopedics" },
   { "id": 9, "name": "pediatrics" },
-  { "id": 10, "name": "ophthalmology" },
-  { "id": 11, "name": "ophthalmology1" }
+  { "id": 10, "name": "ophthalmology" }
+  
 ]
