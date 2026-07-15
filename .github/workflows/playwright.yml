@@ -21,7 +21,7 @@ jobs:
       env:
         EMAIL: ${{ secrets.EMAIL }}
         PASSWORD: ${{ secrets.PASSWORD }}
-      run: npx playwright test tests/input-fields.spec.ts tests/checkboxes.spec.ts
+      run:  npm run test:smoke
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

@@ -5,7 +5,7 @@ test.beforeEach(async ({ homePage }) => {
     await homePage.goToPetTypes();
 });
 
-test("Update Pet type", async ({ petTypesPage, editPetTypePage }) => {
+test("Update Pet type @smoke", async ({ petTypesPage, editPetTypePage }) => {
     await expect(petTypesPage.heading).toBeVisible();
 
     await petTypesPage.clickEdit(petTypesPage.rowByName('cat'));
@@ -26,7 +26,7 @@ test("Update Pet type", async ({ petTypesPage, editPetTypePage }) => {
     await expect(petTypesPage.inputById('0')).toHaveValue('cat');
 });
 
-test("Cancel Pet type update", async ({ petTypesPage, editPetTypePage }) => {
+test("Cancel Pet type update @smoke", async ({ petTypesPage, editPetTypePage }) => {
     await expect(petTypesPage.heading).toBeVisible();
 
     await petTypesPage.clickEdit(petTypesPage.rowById('1'));
@@ -38,7 +38,7 @@ test("Cancel Pet type update", async ({ petTypesPage, editPetTypePage }) => {
     await expect(petTypesPage.rowById('1').getByRole('textbox')).toHaveValue('dog');
 });
 
-test("Validation of Pet type name is required", async ({ petTypesPage, editPetTypePage }) => {
+test("Validation of Pet type name is required @smoke", async ({ petTypesPage, editPetTypePage }) => {
     await expect(petTypesPage.heading).toBeVisible();
 
     await petTypesPage.clickEdit(petTypesPage.rowById('2'));

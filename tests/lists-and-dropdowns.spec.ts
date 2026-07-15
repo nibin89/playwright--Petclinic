@@ -5,7 +5,7 @@ test.beforeEach(async ({ page, ownersPage }) => {
   await ownersPage.goto();
 });
 
-test('Validate selected Pet types from the list', async ({ ownersPage, ownerInformationPage, editPetPage }) => {
+test('Validate selected Pet types from the list @smoke', async ({ ownersPage, ownerInformationPage, editPetPage }) => {
   await expect(ownersPage.heading).toHaveText('Owners');
 
   await ownersPage.openOwner('George Franklin');
@@ -24,7 +24,7 @@ test('Validate selected Pet types from the list', async ({ ownersPage, ownerInfo
   }
 });
 
-test('Validate pet type update', async ({ ownersPage, ownerInformationPage, editPetPage }) => {
+test('Validate pet type update @smoke', async ({ ownersPage, ownerInformationPage, editPetPage }) => {
   await expect(ownersPage.heading).toHaveText('Owners');
 
   await ownersPage.openOwner('Eduardo Rodriquez');
