@@ -1,4 +1,9 @@
 import { test as base, expect } from '@playwright/test';
+import { HomePage } from '../pages/HomePage';
+import { PetTypesPage } from '../pages/PetTypesPage';
+import { EditPetTypePage } from '../pages/EditPetTypePage';
+import { VeterinariansPage } from '../pages/VeterinariansPage';
+import { EditVeterinarianPage } from '../pages/EditveterinariansPage';
 
 const API_URL = 'https://petclinic-api.bondaracademy.com/petclinic';
 
@@ -12,7 +17,35 @@ type OwnerFixture = {
     };
 };
 
-export const test = base.extend<OwnerFixture>({
+type PageObjectFixtures = {
+    homePage: HomePage;
+    petTypesPage: PetTypesPage;
+    editPetTypePage: EditPetTypePage;
+    veterinariansPage: VeterinariansPage;
+    editVeterinarianPage: EditVeterinarianPage;
+};
+
+export const test = base.extend<OwnerFixture & PageObjectFixtures>({
+    homePage: async ({ page }, use) => {
+        await use(new HomePage(page));
+    },
+
+    petTypesPage: async ({ page }, use) => {
+        await use(new PetTypesPage(page));
+    },
+
+    editPetTypePage: async ({ page }, use) => {
+        await use(new EditPetTypePage(page));
+    },
+
+    veterinariansPage: async ({ page }, use) => {
+        await use(new VeterinariansPage(page));
+    },
+
+    editVeterinarianPage: async ({ page }, use) => {
+        await use(new EditVeterinarianPage(page));
+    },
+
     owner: async ({ request }, use) => {
 
         // Pre-cleanup: delete any leftover Fixture Owners that failed to delete in the previous runs
