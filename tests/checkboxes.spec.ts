@@ -1,58 +1,47 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
-test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole("link", { name: "Pet Types" }).click();
+test.beforeEach(async ({ homePage }) => {
+    await homePage.goto();
+    await homePage.goToVeterinarians();
 });
 
-test("Validate selected specialities", async ({ page }) => {
-    await page.getByRole('button', { name: 'Veterinarians' }).click();
-    await page.getByRole("link", { name: 'All' }).click();
+test("Validate selected specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+    await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Helen Leary'));
 
-    await page.getByRole('row', { name: 'Helen Leary' }).getByRole("button", { name: "Edit Vet" }).click();
-    await expect(page.locator(".selected-specialties")).toHaveText('radiology');
-    await page.locator(".selected-specialties").click();
-    await expect(page.getByRole('checkbox', { name: 'radiology' })).toBeChecked();
+    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('radiology');
+    await editVeterinarianPage.openSpecialtiesDropdown();
+    await expect(editVeterinarianPage.specialtyCheckbox('radiology')).toBeChecked();
 
-    await page.getByRole('checkbox', { name: 'surgery' }).uncheck();
-    await page.getByRole('checkbox', { name: 'denistry' }).uncheck();
-    await page.getByRole('checkbox', { name: 'surgery' }).check();
-    await page.getByRole('checkbox', { name: 'radiology' }).uncheck();
+    await editVeterinarianPage.uncheckSpecialty('surgery');
+    await editVeterinarianPage.uncheckSpecialty('denistry');
+    await editVeterinarianPage.checkSpecialty('surgery');
+    await editVeterinarianPage.uncheckSpecialty('radiology');
 
-    await expect(page.getByRole('checkbox', { name: 'surgery' })).toBeChecked();
+    await expect(editVeterinarianPage.specialtyCheckbox('surgery')).toBeChecked();
 
-    await page.getByRole('checkbox', { name: 'denistry' }).check();
+    await editVeterinarianPage.checkSpecialty('denistry');
 
-    await expect(page.locator(".selected-specialties")).toHaveText('surgery, denistry');
-})
+    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery, denistry');
+});
 
-test("Select all specialities", async ({ page }) => {
-    await page.getByRole('button', { name: 'Veterinarians' }).click();
-    await page.getByRole("link", { name: 'All' }).click();
-    await page.getByRole('row', { name: 'Rafael Ortega' }).getByRole("button", { name: "Edit Vet" }).click();
-    await expect(page.locator(".selected-specialties")).toHaveText('surgery');
-    await page.locator(".selected-specialties").click()
+test("Select all specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+    await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Rafael Ortega'));
 
-    const allBoxes = page.getByRole('checkbox')
-    for (const box of await allBoxes.all()) {
-        await box.check()
-        expect(await box.isChecked()).toBeTruthy()
-    }
-    // Assert AFTER all checkboxes are checked
-    await expect(page.locator(".selected-specialties")).toHaveText('surgery, radiology, denistry')
-})
+    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery');
+    await editVeterinarianPage.openSpecialtiesDropdown();
 
-test("Unselect all specialities", async ({ page }) => {
-    await page.getByRole('button', { name: 'Veterinarians' }).click();
-    await page.getByRole("link", { name: 'All' }).click();
-    await page.getByRole('row', { name: 'Linda Douglas' }).getByRole("button", { name: "Edit Vet" }).click();
-    await expect(page.locator(".selected-specialties")).toHaveText('denistry, surgery');
-    await page.locator("div.dropdown-display").click()
-    const allBoxes = page.getByRole('checkbox')
-    for (const box of await allBoxes.all()) {
-        await box.uncheck()
-        expect(await box.isChecked()).toBeFalsy()
-    }
+    await editVeterinarianPage.checkAllSpecialties();
 
-    await expect(page.locator(".selected-specialties")).toBeEmpty();
-})
+    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery, radiology, denistry');
+});
+
+test("Unselect all specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+    await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Linda Douglas'));
+
+    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('denistry, surgery');
+    await editVeterinarianPage.openSpecialtiesDropdown();
+
+    await editVeterinarianPage.uncheckAllSpecialties();
+
+    await expect(editVeterinarianPage.selectedSpecialties).toBeEmpty();
+});
