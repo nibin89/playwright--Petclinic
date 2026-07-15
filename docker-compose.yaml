@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: ./Dockerfile
     command: npx playwright test --reporter=html
-    env_file:
-      - .env
     environment:
       - EMAIL=${EMAIL:-}
       - PASSWORD=${PASSWORD:-}
