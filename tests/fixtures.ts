@@ -1,12 +1,10 @@
 import { test as base, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { PetTypesPage } from '../pages/PetTypesPage';
+import { NewPetTypePage } from '../pages/NewPetTypePage';
 import { EditPetTypePage } from '../pages/EditPetTypePage';
 import { VeterinariansPage } from '../pages/VeterinariansPage';
 import { EditVeterinarianPage } from '../pages/EditveterinariansPage';
-import { OwnersPage } from '../pages/OwnersPage';
-import { OwnerInformationPage } from '../pages/OwnerInformationPage';
-import { EditPetPage } from '../pages/EditPetPage';
 
 const API_URL = 'https://petclinic-api.bondaracademy.com/petclinic';
 
@@ -23,12 +21,10 @@ type OwnerFixture = {
 type PageObjectFixtures = {
     homePage: HomePage;
     petTypesPage: PetTypesPage;
+    newPetTypePage: NewPetTypePage;
     editPetTypePage: EditPetTypePage;
     veterinariansPage: VeterinariansPage;
     editVeterinarianPage: EditVeterinarianPage;
-    ownersPage: OwnersPage;
-    ownerInformationPage: OwnerInformationPage;
-    editPetPage: EditPetPage;
 };
 
 export const test = base.extend<OwnerFixture & PageObjectFixtures>({
@@ -38,6 +34,10 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
 
     petTypesPage: async ({ page }, use) => {
         await use(new PetTypesPage(page));
+    },
+
+    newPetTypePage: async ({ page }, use) => {
+        await use(new NewPetTypePage(page));
     },
 
     editPetTypePage: async ({ page }, use) => {
@@ -52,20 +52,9 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
         await use(new EditVeterinarianPage(page));
     },
 
-    ownersPage: async ({ page }, use) => {
-        await use(new OwnersPage(page));
-    },
-
-    ownerInformationPage: async ({ page }, use) => {
-        await use(new OwnerInformationPage(page));
-    },
-
-    editPetPage: async ({ page }, use) => {
-        await use(new EditPetPage(page));
-    },
-
     owner: async ({ request }, use) => {
-        // ...unchanged, keep your existing implementation here
+
+        // Pre-cleanup: delete any leftover Fixture Owners that failed to delete in the previous runs
         const existingResponse = await request.get(`${API_URL}/api/owners?lastName=Owner`);
         const existingresponseText = await existingResponse.text();
         if (existingresponseText) {
@@ -77,6 +66,7 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
             }
         }
 
+        // Step 1: Create owner
         const createOwnerResponse = await request.post(`${API_URL}/api/owners`, {
             data: {
                 firstName: 'Fixture',
@@ -89,6 +79,7 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
         expect(createOwnerResponse.status()).toBe(201);
         const ownerDataJson = await createOwnerResponse.json();
 
+        // Step 2: Create pet
         const createPetResponse = await request.post(`${API_URL}/api/owners/${ownerDataJson.id}/pets`, {
             data: {
                 id: null,
@@ -102,6 +93,7 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
         expect(createPetResponse.status()).toBe(201);
         const petDataResponseJson = await createPetResponse.json();
 
+        // Step 3: Create visit
         const createVisitResponse = await request.post(
             `${API_URL}/api/owners/${ownerDataJson.id}/pets/${petDataResponseJson.id}/visits`,
             {
@@ -115,6 +107,7 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
         );
         expect(createVisitResponse.status()).toBe(201);
 
+        // Hand control to the test
         await use({
             id: ownerDataJson.id,
             firstName: 'Fixture',
@@ -123,6 +116,7 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
             visitDescription: 'Fixture visit',
         });
 
+        // Teardown: delete owner
         await request.delete(`${API_URL}/api/owners/${ownerDataJson.id}`);
     },
 });
