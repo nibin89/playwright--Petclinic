@@ -1,6 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { PetTypesPage } from '../pages/PetTypesPage';
+import { NewPetTypePage } from '../pages/NewPetTypePage';
 import { EditPetTypePage } from '../pages/EditPetTypePage';
 import { VeterinariansPage } from '../pages/VeterinariansPage';
 import { EditVeterinarianPage } from '../pages/EditveterinariansPage';
@@ -20,6 +21,7 @@ type OwnerFixture = {
 type PageObjectFixtures = {
     homePage: HomePage;
     petTypesPage: PetTypesPage;
+    newPetTypePage: NewPetTypePage;
     editPetTypePage: EditPetTypePage;
     veterinariansPage: VeterinariansPage;
     editVeterinarianPage: EditVeterinarianPage;
@@ -32,6 +34,10 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
 
     petTypesPage: async ({ page }, use) => {
         await use(new PetTypesPage(page));
+    },
+
+    newPetTypePage: async ({ page }, use) => {
+        await use(new NewPetTypePage(page));
     },
 
     editPetTypePage: async ({ page }, use) => {

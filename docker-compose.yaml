@@ -3,11 +3,12 @@ services:
   playwright-test:
     image: playwright-test
     build:
-     context: .
-     dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./Dockerfile
     command: npx playwright test --reporter=html
+    environment:
+      - EMAIL=${EMAIL:-}
+      - PASSWORD=${PASSWORD:-}
     volumes:
-    - ./playwright-report:/petclinic/playwright-report
-    - ./test-results:/petclinic/test-results
-
-
+      - ./playwright-report:/petclinic/playwright-report
+      - ./test-results:/petclinic/test-results

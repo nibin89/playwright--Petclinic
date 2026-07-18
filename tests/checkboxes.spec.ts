@@ -5,7 +5,7 @@ test.beforeEach(async ({ homePage }) => {
     await homePage.goToVeterinarians();
 });
 
-test("Validate selected specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+test("Validate selected specialities @smoke", async ({ veterinariansPage, editVeterinarianPage }) => {
     await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Helen Leary'));
 
     await expect(editVeterinarianPage.selectedSpecialties).toHaveText('radiology');
@@ -24,7 +24,7 @@ test("Validate selected specialities", async ({ veterinariansPage, editVeterinar
     await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery, denistry');
 });
 
-test("Select all specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+test("Select all specialities @smoke", async ({ veterinariansPage, editVeterinarianPage }) => {
     await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Rafael Ortega'));
 
     await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery');
@@ -35,7 +35,7 @@ test("Select all specialities", async ({ veterinariansPage, editVeterinarianPage
     await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery, radiology, denistry');
 });
 
-test("Unselect all specialities", async ({ veterinariansPage, editVeterinarianPage }) => {
+test("Unselect all specialities @smoke", async ({ veterinariansPage, editVeterinarianPage }) => {
     await veterinariansPage.clickEditVet(veterinariansPage.rowByName('Linda Douglas'));
 
     await expect(editVeterinarianPage.selectedSpecialties).toHaveText('denistry, surgery');

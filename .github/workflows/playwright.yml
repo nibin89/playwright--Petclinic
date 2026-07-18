@@ -17,14 +17,37 @@ jobs:
       run: npm ci --force
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps --force
-    - name: Run a single Playwright test file
+    - name: Run a Playwright test file
       env:
         EMAIL: ${{ secrets.EMAIL }}
         PASSWORD: ${{ secrets.PASSWORD }}
-      run: npx playwright test tests/input-fields.spec.ts tests/checkboxes.spec.ts
+      run:  npm run test:smoke
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+  docker-test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Build Docker image
+      run: docker compose build
+
+    - name: Run smoke tests in Docker
+      env:
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+      run: docker compose run --rm playwright-test npx playwright test --grep @smoke --reporter=html
+
+    - name: Upload Playwright report (Docker run)
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report-docker
         path: playwright-report/
         retention-days: 30

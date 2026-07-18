@@ -7,7 +7,9 @@ export default defineConfig({
   fullyParallel: false,
   retries: 0,
   workers: 1,
-  reporter: 'html',
+  reporter: [['html'],
+    process.env.CI ? ["dot"] : ["list"]
+  ],
   globalSetup: '.auth/auth-setup.ts',
   timeout: 90000,
   use: {
