@@ -4,6 +4,7 @@ export class EditPetPage {
     readonly page: Page;
     readonly heading: Locator;
     readonly nameInput: Locator;
+    readonly nameField: Locator;
     readonly ownerNameField: Locator;
     readonly typeDropdown: Locator;
     readonly typeReadOnlyField: Locator;
@@ -13,6 +14,7 @@ export class EditPetPage {
         this.page = page;
         this.heading = page.getByRole('heading', { name: ' Pet ' });
         this.nameInput = page.locator('#name');
+        this.nameField = this.nameInput;
         this.ownerNameField = page.locator('#owner_name');
         this.typeDropdown = page.locator('#type');
         this.typeReadOnlyField = page.locator('#type1');
@@ -23,11 +25,19 @@ export class EditPetPage {
         return this.typeDropdown.locator('option').allInnerTexts();
     }
 
+    async getAllTypeOptions(): Promise<string[]> {
+        return this.getTypeOptions();
+    }
+
     async selectType(type: string) {
         await this.typeDropdown.selectOption(type);
     }
 
-    async clickUpdate() {
+    async update() {
         await this.updatePetButton.click();
+    }
+
+    async clickUpdate() {
+        await this.update();
     }
 }
