@@ -8,6 +8,7 @@ import { EditVeterinarianPage } from '../pages/EditveterinariansPage';
 import { OwnerPage } from '../pages/OwnersPage';
 import { OwnerInformationPage } from '../pages/OwnerInformationPage';
 import { EditPetPage } from '../pages/EditPetPage';
+import { AddPetPage } from '../pages/AddPetPage';
 import { SpecialtiesPage } from '../pages/SpecialtiesPage';
 
 const API_URL = 'https://petclinic-api.bondaracademy.com/petclinic';
@@ -31,6 +32,7 @@ type PageObjectFixtures = {
     editVeterinarianPage: EditVeterinarianPage;
     ownersPage: OwnerPage;
     ownerInformationPage: OwnerInformationPage;
+    addPetPage: AddPetPage;
     editPetPage: EditPetPage;
     specialtiesPage: SpecialtiesPage;
 };
@@ -66,6 +68,10 @@ export const test = base.extend<OwnerFixture & PageObjectFixtures>({
 
     ownerInformationPage: async ({ page }, use) => {
         await use(new OwnerInformationPage(page));
+    },
+
+    addPetPage: async ({ page }, use) => {
+        await use(new AddPetPage(page));
     },
 
     editPetPage: async ({ page }, use) => {

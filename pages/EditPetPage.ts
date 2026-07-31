@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class EditPetPage {
-    readonly page: Page;
+export class EditPetPage extends BasePage {
     readonly heading: Locator;
     readonly nameInput: Locator;
     readonly nameField: Locator;
@@ -11,7 +11,7 @@ export class EditPetPage {
     readonly updatePetButton: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.heading = page.getByRole('heading', { name: ' Pet ' });
         this.nameInput = page.locator('#name');
         this.nameField = this.nameInput;
@@ -30,11 +30,11 @@ export class EditPetPage {
     }
 
     async selectType(type: string) {
-        await this.typeDropdown.selectOption(type);
+        await this.selectOption(this.typeDropdown, type);
     }
 
     async update() {
-        await this.updatePetButton.click();
+        await this.click(this.updatePetButton);
     }
 
     async clickUpdate() {

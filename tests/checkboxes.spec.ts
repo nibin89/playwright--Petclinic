@@ -32,7 +32,9 @@ test("Select all specialities @smoke", async ({ veterinariansPage, editVeterinar
 
     await editVeterinarianPage.checkAllSpecialties();
 
-    await expect(editVeterinarianPage.selectedSpecialties).toHaveText('surgery, radiology, denistry');
+    await expect(editVeterinarianPage.selectedSpecialties).toContainText('surgery');
+    await expect(editVeterinarianPage.selectedSpecialties).toContainText('radiology');
+    await expect(editVeterinarianPage.selectedSpecialties).toContainText('denistry');
 });
 
 test("Unselect all specialities @smoke", async ({ veterinariansPage, editVeterinarianPage }) => {

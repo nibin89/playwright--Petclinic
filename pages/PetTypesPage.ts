@@ -1,14 +1,14 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class PetTypesPage {
-  readonly page: Page;
+export class PetTypesPage extends BasePage {
   readonly heading: Locator;
   readonly addButton: Locator;
 
   private lastDialogMessage: string | null = null;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.heading = page.getByRole('heading', { level: 2 }).first();
     this.addButton = page.getByRole('button', { name: 'Add' });
   }
@@ -34,11 +34,11 @@ export class PetTypesPage {
   }
 
   async clickEdit(row: Locator) {
-    await row.getByRole('button', { name: 'Edit' }).click();
+    await this.click(row.getByRole('button', { name: 'Edit' }));
   }
 
   async clickAdd() {
-    await this.addButton.click();
+    await this.click(this.addButton);
   }
 
   /**
@@ -51,7 +51,7 @@ export class PetTypesPage {
       dialog.accept();
     });
 
-    await row.getByRole('button', { name: 'Delete' }).click();
+    await this.click(row.getByRole('button', { name: 'Delete' }));
     await this.page.waitForResponse('**/pettypes/*');
   }
 

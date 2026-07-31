@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class OwnerPage {
-    readonly page: Page;
+export class OwnerPage extends BasePage {
     readonly heading: Locator;
     readonly rows: Locator;
     readonly searchInput: Locator;
@@ -12,9 +12,9 @@ export class OwnerPage {
     readonly firstPetName: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.heading = page.getByRole('heading', { name: 'Owners' });
-        this.rows = page.locator('table tbody tr');
+        this.rows = page.locator('table tbody tr', { has: page.locator('td.ownerFullName, td:has-text("Owner")') });
         this.searchInput = page.locator('input[name="lastName"]');
         this.findOwnerButton = page.getByRole('button', { name: 'Find Owner' });
         this.ownerFullName = page.locator('.ownerFullName');
@@ -24,11 +24,13 @@ export class OwnerPage {
     }
 
     async goto() {
-        await this.page.goto('/owners/find');
+        await this.page.goto('/owners');
+        await this.page.waitForLoadState('networkidle');
+        await this.searchInput.waitFor({ state: 'visible' });
     }
 
     rowByName(name: string): Locator {
-        return this.rows.filter({ hasText: name });
+        return this.rows.filter({ has: this.page.locator('td', { hasText: name }) });
     }
 
     cell(row: Locator, index: number): Locator {
@@ -40,6 +42,7 @@ export class OwnerPage {
     }
 
     async searchByLastName(lastName: string) {
+        await this.searchInput.waitFor({ state: 'visible' });
         await this.searchInput.fill(lastName);
         await this.findOwnerButton.click();
     }
@@ -49,6 +52,12 @@ export class OwnerPage {
     }
 
     async openOwner(ownerName: string) {
+        const row = this.rowByName(ownerName);
+        if ((await row.count()) === 0) {
+            const parts = ownerName.split(' ');
+            const lastName = parts[parts.length - 1];
+            await this.searchByLastName(lastName);
+        }
         await this.rowByName(ownerName).getByRole('link').first().click();
     }
 

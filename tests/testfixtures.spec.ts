@@ -1,18 +1,13 @@
 import { test, expect } from './fixtures';
 
-test('Test with fixture', async ({ page, owner }) => {
+test('Test with fixture', async ({ ownerInformationPage, owner }) => {
+    await ownerInformationPage.gotoOwner(owner.id);
 
-    await page.goto(`/owners/${owner.id}`);
+    await ownerInformationPage.deleteVisit(owner.visitDescription);
+    await expect(ownerInformationPage.page.getByText(owner.visitDescription)).not.toBeVisible();
 
-    const visitRow = page.getByRole('row', { name: owner.visitDescription });
-
-    await visitRow.getByRole('button', { name: 'Delete Visit' }).click();
-    await expect(page.getByText(owner.visitDescription)).not.toBeVisible();
-
-    const petRow = page.getByRole('row', { name: owner.petName }).last();
-
-    await petRow.getByRole('button', { name: 'Delete Pet' }).click();
+    await ownerInformationPage.deletePet(owner.petName);
     await expect(
-        page.getByRole('row', { name: `Name ${owner.petName}`, exact: true })
+        ownerInformationPage.page.getByRole('row', { name: `Name ${owner.petName}`, exact: true })
     ).not.toBeVisible();
 });

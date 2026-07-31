@@ -1,16 +1,16 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class HomePage {
-    readonly page: Page;
+export class HomePage extends BasePage {
     readonly petTypesLink: Locator;
-    readonly veterinariansButton: Locator;
+    readonly veterinariansMenuButton: Locator;
     readonly allVetsLink: Locator;
     readonly specialtiesLink: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.petTypesLink = page.getByRole('link', { name: 'Pet Types' });
-        this.veterinariansButton = page.getByRole('button', { name: 'Veterinarians' });
+        this.veterinariansMenuButton = page.getByRole('button', { name: 'Veterinarians' });
         this.allVetsLink = page.getByRole('link', { name: 'All' });
         this.specialtiesLink = page.getByRole('link', { name: ' Specialties' });
     }
@@ -20,15 +20,15 @@ export class HomePage {
     }
 
     async goToPetTypes() {
-        await this.petTypesLink.click();
+        await this.click(this.petTypesLink);
     }
 
     async goToVeterinarians() {
-        await this.veterinariansButton.click();
-        await this.allVetsLink.click();
+        await this.click(this.veterinariansMenuButton);
+        await this.click(this.allVetsLink);
     }
 
     async goToSpecialties() {
-        await this.specialtiesLink.click();
+        await this.click(this.specialtiesLink);
     }
 }

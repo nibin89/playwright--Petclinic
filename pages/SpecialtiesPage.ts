@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class SpecialtiesPage {
-    readonly page: Page;
+export class SpecialtiesPage extends BasePage {
     readonly heading: Locator;
     readonly addButton: Locator;
     readonly addNameInput: Locator;
@@ -14,7 +14,7 @@ export class SpecialtiesPage {
     readonly activeEditInput: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.heading = page.getByRole('heading', { name: 'Specialties' });
         this.addButton = page.getByRole('button', { name: ' Add ' });
         this.addNameInput = page.locator('#name');
@@ -26,29 +26,29 @@ export class SpecialtiesPage {
     }
 
     rowByName(name: string): Locator {
-        return this.page.getByRole('row', { name });
+        return this.page.locator('table tbody tr', { has: this.page.locator('td', { hasText: name }) });
     }
 
     async clickEdit(row: Locator) {
-        await row.getByRole('button', { name: 'Edit' }).click();
+        await this.click(row.getByRole('button', { name: 'Edit' }));
     }
 
     async clickDelete(row: Locator) {
-        await row.getByRole('button', { name: 'Delete' }).click();
+        await this.click(row.getByRole('button', { name: 'Delete' }));
     }
 
     async fillActiveEditInput(value: string) {
-        await this.activeEditInput.fill(value);
+        await this.fill(this.activeEditInput, value);
     }
 
     async clickUpdate() {
-        await this.updateButton.click();
+        await this.click(this.updateButton);
     }
 
     async addSpecialty(name: string) {
-        await this.addButton.click();
-        await this.addNameInput.fill(name);
-        await this.saveButton.click();
+        await this.click(this.addButton);
+        await this.fill(this.addNameInput, name);
+        await this.click(this.saveButton);
     }
 
     async getAllSpecialtyNames(): Promise<string[]> {
