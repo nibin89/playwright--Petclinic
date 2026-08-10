@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class EditPetTypePage {
-    readonly page: Page;
+export class EditPetTypePage extends BasePage {
     readonly heading: Locator;
     readonly nameInput: Locator;
     readonly errorMessage: Locator;
@@ -9,7 +9,7 @@ export class EditPetTypePage {
     readonly cancelButton: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.heading = page.getByRole('heading', { name: 'Edit Pet Type' });
         this.nameInput = page.locator('#name');
         this.errorMessage = page.locator('.help-block').filter({ hasText: 'Name is required' });
@@ -18,20 +18,18 @@ export class EditPetTypePage {
     }
 
     async fillName(value: string) {
-        await this.nameInput.fill(value);
+        await this.fill(this.nameInput, value);
     }
 
     async clearName() {
-        await this.nameInput.clear()
-
-
+        await this.nameInput.clear();
     }
 
     async clickUpdate() {
-        await this.updateButton.click();
+        await this.click(this.updateButton);
     }
 
     async clickCancel() {
-        await this.cancelButton.click();
+        await this.click(this.cancelButton);
     }
 }

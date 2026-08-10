@@ -1,14 +1,14 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class NewPetTypePage {
-  readonly page: Page;
+export class NewPetTypePage extends BasePage {
   readonly heading: Locator;
   readonly nameLabel: Locator;
   readonly nameInput: Locator;
   readonly saveButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.heading = page.getByRole('heading', { level: 2 }).nth(1);
     this.nameLabel = page.locator('label', { hasText: 'Name' });
     this.nameInput = page.locator('#name');
@@ -16,10 +16,10 @@ export class NewPetTypePage {
   }
 
   async fillName(value: string) {
-    await this.nameInput.fill(value);
+    await this.fill(this.nameInput, value);
   }
 
   async save() {
-    await this.saveButton.click();
+    await this.click(this.saveButton);
   }
 }
